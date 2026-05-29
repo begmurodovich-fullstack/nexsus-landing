@@ -249,6 +249,306 @@ document.addEventListener('DOMContentLoaded', () => {
     initSlider();
     initSmoothScroll();
     initStickyNavbar();
+    // --- 7. Custom Cursor ---
+    const initCustomCursor = () => {
+        if (window.matchMedia("(pointer: coarse)").matches) return;
+
+        const cursor = document.querySelector('.custom-cursor');
+        const follower = document.querySelector('.cursor-follower');
+        
+        if (!cursor || !follower) return;
+
+        let mouseX = 0, mouseY = 0;
+        let followerX = 0, followerY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            cursor.style.transform = `translate(${mouseX}px, ${mouseY}px) translate(-50%, -50%)`;
+        });
+
+        const animateFollower = () => {
+            followerX += (mouseX - followerX) * 0.15;
+            followerY += (mouseY - followerY) * 0.15;
+            follower.style.transform = `translate(${followerX}px, ${followerY}px) translate(-50%, -50%)`;
+            requestAnimationFrame(animateFollower);
+        };
+        animateFollower();
+
+        const interactives = document.querySelectorAll('a, button, input, .ticket-card, .speaker-card');
+        interactives.forEach(el => {
+            el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+            el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+        });
+    };
+
+    // --- 8. 3D Tilt Effect ---
+    const initTiltEffect = () => {
+        if (window.matchMedia("(pointer: coarse)").matches) return;
+
+        const cards = document.querySelectorAll('.bento-card, .speaker-card, .ticket-card, .why-card');
+        
+        cards.forEach(card => {
+            card.classList.add('tilt-card');
+            
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                const rotateX = ((y - centerY) / centerY) * -10;
+                const rotateY = ((x - centerX) / centerX) * 10;
+
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+            });
+
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+                card.style.transition = 'transform 0.5s ease-out';
+            });
+            
+            card.addEventListener('mouseenter', () => {
+                card.style.transition = 'transform 0.1s ease-out';
+            });
+        });
+    };
+
+    // --- 9. Magnetic Buttons ---
+    const initMagneticButtons = () => {
+        if (window.matchMedia("(pointer: coarse)").matches) return;
+
+        const magnetics = document.querySelectorAll('.btn-primary, .social-icon-img, .nav-btn');
+        
+        magnetics.forEach(btn => {
+            btn.classList.add('magnetic');
+            
+            btn.addEventListener('mousemove', (e) => {
+                const rect = btn.getBoundingClientRect();
+                const x = (e.clientX - rect.left) - rect.width / 2;
+                const y = (e.clientY - rect.top) - rect.height / 2;
+                
+                btn.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px)`;
+            });
+
+            btn.addEventListener('mouseleave', () => {
+                btn.style.transform = `translate(0px, 0px)`;
+            });
+        });
+    };
+
+    // --- 10. Parallax Scrolling ---
+    const initParallax = () => {
+        const heroGraphic = document.querySelector('.hero-graphic');
+        const mapGraphic = document.querySelector('.map-img');
+        
+        window.addEventListener('scroll', () => {
+            const scrolled = window.scrollY;
+            
+            if (heroGraphic) {
+                heroGraphic.style.transform = `translateY(${scrolled * 0.15}px)`;
+            }
+            
+            if (mapGraphic) {
+                const mapRect = document.querySelector('.map-section').getBoundingClientRect();
+                if (mapRect.top < window.innerHeight && mapRect.bottom > 0) {
+                    mapGraphic.style.transform = `translateY(${(window.innerHeight - mapRect.top) * 0.1}px) scale(1.1)`;
+                }
+            }
+        });
+    };
+
+    // --- 11. Text Scramble Effect ---
+    const initTextScramble = () => {
+        class TextScramble {
+            constructor(el) {
+                this.el = el;
+                this.chars = '!<>-_\\\\/[]{}—=+*^?#________';
+                this.update = this.update.bind(this);
+            }
+            setText(newText) {
+                const oldText = this.el.innerText;
+                const length = Math.max(oldText.length, newText.length);
+                const promise = new Promise((resolve) => this.resolve = resolve);
+                this.queue = [];
+                for (let i = 0; i < length; i++) {
+                    const from = oldText[i] || '';
+                    const to = newText[i] || '';
+                    const start = Math.floor(Math.random() * 40);
+                    const end = start + Math.floor(Math.random() * 40);
+                    this.queue.push({ from, to, start, end });
+                }
+                cancelAnimationFrame(this.frameRequest);
+                this.frame = 0;
+                this.update();
+                return promise;
+            }
+            update() {
+                let output = '';
+                let complete = 0;
+                for (let i = 0, n = this.queue.length; i < n; i++) {
+                    let { from, to, start, end, char } = this.queue[i];
+                    if (this.frame >= end) {
+                        complete++;
+                        output += to;
+                    } else if (this.frame >= start) {
+                        if (!char || Math.random() < 0.28) {
+                            char = this.randomChar();
+                            this.queue[i].char = char;
+                        }
+                        output += `<span style="color: var(--primary-blue); opacity: 0.7;">${char}</span>`;
+                    } else {
+                        output += from;
+                    }
+                }
+                this.el.innerHTML = output;
+                if (complete === this.queue.length) {
+                    this.resolve();
+                } else {
+                    this.frameRequest = requestAnimationFrame(this.update);
+                    this.frame++;
+                }
+            }
+            randomChar() {
+                return this.chars[Math.floor(Math.random() * this.chars.length)];
+            }
+        }
+
+        const el = document.querySelector('.hero-title');
+        if (el) {
+            const fx = new TextScramble(el);
+            setTimeout(() => {
+                fx.setText('Nexus Next-Gen AI Summit').then(() => {
+                    setTimeout(() => {
+                        el.innerHTML = 'NEXT-GEN AI<br>SUMMIT';
+                    }, 100);
+                });
+            }, 300);
+        }
+    };
+
+    // --- 12. Particle Background ---
+    const initParticles = () => {
+        const canvas = document.getElementById('particle-canvas');
+        if (!canvas) return;
+        
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        let particles = [];
+        let mouse = { x: -9999, y: -9999 };
+        
+        const resize = () => {
+            const section = document.querySelector('.hero-card');
+            if(!section) return;
+            width = canvas.width = section.offsetWidth;
+            height = canvas.height = section.offsetHeight;
+            init();
+        };
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 1;
+                this.vy = (Math.random() - 0.5) * 1;
+                this.radius = Math.random() * 1.5;
+                this.color = 'rgba(20, 81, 245, 0.4)';
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+            update() {
+                if (this.x < 0 || this.x > width) this.vx *= -1;
+                if (this.y < 0 || this.y > height) this.vy *= -1;
+                
+                this.x += this.vx;
+                this.y += this.vy;
+
+                const dx = mouse.x - this.x;
+                const dy = mouse.y - this.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                const minDist = 150;
+
+                if (distance < minDist) {
+                    const angle = Math.atan2(dy, dx);
+                    const force = (minDist - distance) / minDist;
+                    this.x -= Math.cos(angle) * force * 5;
+                    this.y -= Math.sin(angle) * force * 5;
+                }
+
+                this.draw();
+            }
+        }
+
+        const init = () => {
+            particles = [];
+            const numParticles = Math.min((width * height) / 10000, 80); 
+            for (let i = 0; i < numParticles; i++) {
+                particles.push(new Particle());
+            }
+        };
+
+        const animate = () => {
+            ctx.clearRect(0, 0, width, height);
+            
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < 120) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = `rgba(20, 81, 245, ${0.15 - distance / 120 * 0.15})`;
+                        ctx.lineWidth = 1;
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            particles.forEach(p => p.update());
+            requestAnimationFrame(animate);
+        };
+
+        window.addEventListener('resize', resize);
+        
+        const heroSection = document.querySelector('.hero-card');
+        if(heroSection) {
+            heroSection.addEventListener('mousemove', (e) => {
+                const rect = heroSection.getBoundingClientRect();
+                mouse.x = e.clientX - rect.left;
+                mouse.y = e.clientY - rect.top;
+            });
+            heroSection.addEventListener('mouseleave', () => {
+                mouse.x = -9999;
+                mouse.y = -9999;
+            });
+        }
+
+        resize();
+        animate();
+    };
+
+    // Initialize all modules
+    initCountdown();
+    initSlider();
+    initSmoothScroll();
+    initStickyNavbar();
     initScrollReveal();
     initForms();
+    
+    // Advanced Animations
+    initCustomCursor();
+    initTiltEffect();
+    initMagneticButtons();
+    initParallax();
+    initTextScramble();
+    initParticles();
 });

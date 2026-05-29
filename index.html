@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="css/index.css">
 </head>
 <body>
+    <div class="custom-cursor"></div>
+    <div class="cursor-follower"></div>
     <div class="app-container">
         <!-- Navbar -->
         <nav class="navbar">
@@ -27,6 +29,7 @@
         <!-- Hero Section -->
         <section class="hero-section">
             <div class="hero-card">
+                <canvas id="particle-canvas"></canvas>
                 <div class="hero-top-bar">
                     <span class="date">OCTOBER 15-17, 2052</span>
                     <span class="location">Horizon Convention Center, TechCity, Utopolis</span>
@@ -224,31 +227,31 @@
             </div>
 
             <div class="why-grid">
-                <div class="why-card left-align-number">
+                <div class="why-card layout-1">
                     <div class="why-card-top">
-                        <h3 class="why-card-title">CUTTING-EDGE INSIGHTS</h3>
+                        <h3 class="why-card-title title-underline">CUTTING-EDGE INSIGHTS</h3>
                         <p class="why-card-text">Gain firsthand knowledge<br>from top AI experts and<br>pioneers shaping the<br>industry.</p>
                     </div>
                     <div class="why-card-number">01</div>
                 </div>
-                <div class="why-card left-align-number">
+                <div class="why-card layout-1">
                     <div class="why-card-top">
                         <h3 class="why-card-title">HANDS-ON LEARNING</h3>
                         <p class="why-card-text">Participate in interactive<br>workshops, live demos, and<br>deep-dive sessions to<br>sharpen your skills.</p>
                     </div>
                     <div class="why-card-number">02</div>
                 </div>
-                <div class="why-card right-align-number">
-                    <div class="why-card-top reverse">
-                        <p class="why-card-text">Connect with AI leaders,<br>investors, startups, and<br>fellow professionals at<br>curated networking events.</p>
+                <div class="why-card layout-2">
+                    <div class="why-card-top">
                         <h3 class="why-card-title">EXCLUSIVE NETWORKING</h3>
+                        <p class="why-card-text">Connect with AI leaders,<br>investors, startups, and<br>fellow professionals at<br>curated networking events.</p>
                     </div>
                     <div class="why-card-number">03</div>
                 </div>
-                <div class="why-card right-align-number">
-                    <div class="why-card-top reverse">
-                        <p class="why-card-text">Explore groundbreaking AI<br>solutions, from emerging<br>startups to tech giants<br>redefining the future.</p>
+                <div class="why-card layout-2">
+                    <div class="why-card-top">
                         <h3 class="why-card-title">INNOVATION SHOWCASE</h3>
+                        <p class="why-card-text">Explore groundbreaking AI<br>solutions, from emerging<br>startups to tech giants<br>redefining the future.</p>
                     </div>
                     <div class="why-card-number">04</div>
                 </div>

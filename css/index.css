@@ -567,21 +567,20 @@ a {
 .why-card-top {
     display: flex;
     justify-content: space-between;
+    align-items: flex-start;
     width: 100%;
     z-index: 2;
-}
-
-.why-card-top.reverse {
-    flex-direction: row-reverse;
+    flex-direction: column;
 }
 
 .why-card-title {
     font-family: var(--font-heading);
-    font-size: 1.25rem;
-    font-weight: 700;
+    font-size: 1.1rem;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     max-width: 50%;
+    margin-bottom: 2rem;
 }
 
 .why-card-text {
@@ -589,26 +588,59 @@ a {
     color: var(--text-gray);
     line-height: 1.6;
     max-width: 45%;
+    margin-top: 1rem;
+}
+
+.why-card.layout-1 .why-card-top {
+    align-items: flex-end;
+}
+.why-card.layout-1 .why-card-title {
+    align-self: flex-start;
+}
+
+.why-card.layout-2 .why-card-top {
+    align-items: flex-start;
+}
+.why-card.layout-2 .why-card-title {
+    align-self: flex-end;
+    text-align: right;
 }
 
 .why-card-number {
     position: absolute;
-    bottom: -3rem;
+    bottom: -3.5rem;
     font-family: var(--font-heading);
     font-size: 14rem;
-    font-weight: 700;
-    color: var(--primary-blue);
+    font-weight: 600;
     line-height: 1;
     z-index: 1;
-    opacity: 0.4;
+    background: linear-gradient(180deg, #1451f5 0%, rgba(20, 81, 245, 0) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.05em;
 }
 
-.left-align-number .why-card-number {
-    left: 1rem;
+.why-card.layout-1 .why-card-number {
+    left: 2rem;
 }
 
-.right-align-number .why-card-number {
-    right: 1rem;
+.why-card.layout-2 .why-card-number {
+    right: 2rem;
+}
+
+.title-underline {
+    position: relative;
+    display: inline-block;
+}
+
+.title-underline::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -6px;
+    width: 100%;
+    height: 2px;
+    background-color: var(--primary-blue);
 }
 
 /* Testimonials Section */
@@ -1335,4 +1367,87 @@ a {
 .footer-social {
     display: flex;
     gap: 1rem;
+}
+
+/* --- Advanced Animations --- */
+
+/* Custom Cursor */
+.custom-cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 12px;
+    height: 12px;
+    background-color: var(--primary-blue);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: width 0.2s, height 0.2s, background-color 0.2s;
+}
+
+.cursor-follower {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 40px;
+    height: 40px;
+    border: 1px solid rgba(20, 81, 245, 0.5);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: width 0.2s, height 0.2s, border-color 0.2s, background-color 0.2s;
+}
+
+/* Hover state added via JS */
+.cursor-hover .custom-cursor {
+    width: 0px;
+    height: 0px;
+}
+.cursor-hover .cursor-follower {
+    width: 60px;
+    height: 60px;
+    background-color: rgba(20, 81, 245, 0.1);
+    border-color: rgba(20, 81, 245, 0.8);
+    backdrop-filter: blur(2px);
+}
+
+/* Hide default cursor on desktop */
+@media (min-width: 900px) {
+    body, a, button, input, textarea {
+        cursor: none !important;
+    }
+}
+
+/* Particle Canvas */
+.hero-card {
+    position: relative;
+    overflow: hidden;
+}
+
+#particle-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.hero-top-bar, .hero-content {
+    position: relative;
+    z-index: 2;
+}
+
+/* Tilt and Magnetic */
+.tilt-card {
+    will-change: transform;
+    transform-style: preserve-3d;
+}
+
+.magnetic {
+    will-change: transform;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
